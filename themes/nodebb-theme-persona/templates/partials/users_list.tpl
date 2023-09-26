@@ -15,6 +15,12 @@
         </div>
         <!-- ENDIF section_online -->
 
+        <!-- IF section_friends -->
+        <div class="friends">
+            <span class="timeago" title="{users.lastonlineISO}"></span>
+        </div>
+        <!-- ENDIF section_friends -->
+
         <!-- IF section_joindate -->
         <div class="joindate">
             <span class="timeago" title="{users.joindateISO}"></span>

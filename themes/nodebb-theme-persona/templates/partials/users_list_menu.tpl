@@ -7,5 +7,6 @@
     <!-- IF isAdminOrGlobalMod -->
     <li><a href="{config.relative_path}/users?section=flagged">[[users:most_flags]]</a></li>
     <li><a href="{config.relative_path}/users?section=banned">[[user:banned]]</a></li>
+    <li><a href="{config.relative_path}/users?section=friends">[[user:friends]]</a></li>
     <!-- ENDIF isAdminOrGlobalMod -->
 </ul>
