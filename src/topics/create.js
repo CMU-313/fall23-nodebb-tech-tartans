@@ -58,6 +58,7 @@ module.exports = function (Topics) {
             db.sortedSetsAdd(timestampedSortedSetKeys, timestamp, topicData.tid),
             db.sortedSetsAdd([
                 'topics:views', 'topics:posts', 'topics:votes',
+                'topics:unresolved', // Add the new topic to the unresolved set
                 `cid:${topicData.cid}:tids:votes`,
                 `cid:${topicData.cid}:tids:posts`,
                 `cid:${topicData.cid}:tids:views`,

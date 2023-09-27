@@ -386,4 +386,9 @@ module.exports = function (Topics) {
         const scores = await db.sortedSetScores('topics:posts', tids);
         return tids.filter((tid, index) => tid && scores[index] !== null && scores[index] <= 1);
     };
+
+    Topics.filterUnresolvedTids = async function (tids) {
+        const unresolvedTids = await db.sortedSetMembers('topics:unresolved', tids);
+        return unresolvedTids;
+    };
 };

@@ -70,7 +70,8 @@ module.exports = function (Topics) {
         }
         deletedTopic.tags = tags;
         await deleteFromFollowersIgnorers(tid);
-
+        // checks if the topic is in 'topics:resolved'
+        const removeResolved = await db.isSortedSetMember('topics:resolved', tid);
         await Promise.all([
             db.deleteAll([
                 `tid:${tid}:followers`,
@@ -93,6 +94,8 @@ module.exports = function (Topics) {
             Topics.events.purge(tid),
             Topics.thumbs.deleteAll(tid),
             reduceCounters(tid),
+            // conditional removal of 'topics:resolved' or 'topics:unresolved'
+            removeResolved ? db.sortedSetRemove('topics:resolved', tid) : db.sortedSetRemove('topics:unresolved', tid),
         ]);
         plugins.hooks.fire('action:topic.purge', { topic: deletedTopic, uid: uid });
         await db.delete(`topic:${tid}`);
