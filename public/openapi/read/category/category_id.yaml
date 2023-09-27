@@ -50,6 +50,8 @@ get:
                       $ref: ../../components/schemas/TopicObject.yaml#/TopicObject
                   nextStart:
                     type: number
+                  isFriend:
+                    type: boolean
                   isWatched:
                     type: boolean
                   isNotWatched:

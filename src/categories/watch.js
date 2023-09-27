@@ -18,6 +18,14 @@ module.exports = function (Categories) {
         return states.map(state => state === Categories.watchStates.ignoring);
     };
 
+    Categories.isFriend = async function (cids, uid) {
+        if (!(parseInt(uid, 10) > 0)) {
+            return cids.map(() => false);
+        }
+        const states = await Categories.getWatchState(cids, uid);
+        return states.map(state => state === Categories.watchStates.ignoring);
+    };
+
     Categories.getWatchState = async function (cids, uid) {
         if (!(parseInt(uid, 10) > 0)) {
             return cids.map(() => Categories.watchStates.notwatching);

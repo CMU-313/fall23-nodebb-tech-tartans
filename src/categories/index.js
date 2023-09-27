@@ -56,6 +56,7 @@ Categories.getCategoryById = async function (data) {
     category.isWatched = watchState[0] === Categories.watchStates.watching;
     category.isNotWatched = watchState[0] === Categories.watchStates.notwatching;
     category.isIgnored = watchState[0] === Categories.watchStates.ignoring;
+    category.isFriend = watchState[0] === Categories.watchStates.friend;
     category.parent = parent;
 
     calculateTopicPostCount(category);
