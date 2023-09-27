@@ -18,6 +18,15 @@
 		"groups": ["registered-users"]
 	},
 	{
+		"route": "/unresolved",
+		"title": "Unresolved",
+		"enabled": true,
+		"iconClass": "fa-inbox",
+		"textClass": "visible-xs-inline",
+		"text": "Unresolved",
+		"groups": ["registered-users"]
+	},
+	{
 		"route": "/recent",
 		"title": "[[global:header.recent]]",
 		"enabled": true,
