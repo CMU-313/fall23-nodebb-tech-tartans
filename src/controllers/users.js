@@ -21,6 +21,9 @@ usersController.index = async function (req, res, next) {
         'sort-reputation': usersController.getUsersSortedByReputation,
         banned: usersController.getBannedUsers,
         flagged: usersController.getFlaggedUsers,
+
+        // Adding New Friends Tab (implemented as online for right now)
+        friends: usersController.getOnlineUsers,
     };
 
     if (req.query.query) {
