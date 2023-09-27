@@ -9,6 +9,8 @@
 
         <span component="category/ignoring/menu" <!-- IF !../isIgnored -->class="hidden"<!-- ENDIF !../isIgnored -->><i class="fa fa-fw fa-eye-slash"></i><span class="visible-sm-inline visible-md-inline visible-lg-inline">[[category:ignoring]]</span></span>
 
+        <span component="category/friends/menu" <!-- IF !../isFriend -->class="hidden"<!-- ENDIF !../isFriend -->><i class="fa fa-fw fa-address-book-o"></i><span class="visible-sm-inline visible-md-inline visible-lg-inline">[[category:friends]]</span></span>
+
         <span class="caret"></span>
     </button>
 
@@ -18,6 +20,8 @@
         <li><a href="#" component="category/notwatching" data-state="notwatching"><i component="category/notwatching/check" class="fa fa-fw <!-- IF ../isNotWatched -->fa-check<!-- ENDIF ../isNotWatched -->"></i><i class="fa fa-fw fa-clock-o"></i> [[category:not-watching]]<p class="help-text"><small>[[category:not-watching.description]]</small></p></a></li>
 
         <li><a href="#" component="category/ignoring" data-state="ignoring"><i component="category/ignoring/check" class="fa fa-fw <!-- IF ../isIgnored -->fa-check<!-- ENDIF ../isIgnored -->"></i><i class="fa fa-fw fa-eye-slash"></i> [[category:ignoring]]<p class="help-text"><small>[[category:ignoring.description]]</small></p></a></li>
+
+        <li><a href="#" component="category/friends" data-state="friends"><i component="category/friends/check" class="fa fa-fw <!-- IF ../isFriend -->fa-check<!-- ENDIF ../isFriend-->"></i><i class="fa fa-fw fa-address-book-o"></i> [[category:friends]]<p class="help-text"><small>[[category:friends.description]]</small></p></a></li>
     </ul>
 </div>
 <!-- ENDIF config.loggedIn -->

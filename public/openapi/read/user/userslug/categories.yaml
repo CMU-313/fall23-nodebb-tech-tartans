@@ -54,6 +54,8 @@ get:
                           type: boolean
                         isNotWatched:
                           type: boolean
+                        isFriend:
+                          type: boolean
                         imageClass:
                           type: string
                   title:

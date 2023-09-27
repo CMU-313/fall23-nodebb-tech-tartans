@@ -82,6 +82,9 @@ define('forum/category', [
                 $('[component="category/ignoring/menu"]').toggleClass('hidden', state !== 'ignoring');
                 $('[component="category/ignoring/check"]').toggleClass('fa-check', state === 'ignoring');
 
+                $('[component="category/friends/menu"]').toggleClass('hidden', state !== 'friends');
+                $('[component="category/friends/check"]').toggleClass('fa-check', state === 'friends');
+
                 alerts.success('[[category:' + state + '.message]]');
             });
         });
