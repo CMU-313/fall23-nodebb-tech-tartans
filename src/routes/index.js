@@ -82,7 +82,6 @@ _mounts.category = (app, name, middleware, controllers) => {
     setupPageRoute(app, '/recent', [], controllers.recent.get);
     setupPageRoute(app, '/top', [], controllers.top.get);
     setupPageRoute(app, '/unread', [middleware.ensureLoggedIn], controllers.unread.get);
-    setupPageRoute(app, '/unresolved', [middleware.ensureLoggedIn], controllers.unresolved.get);
 
     setupPageRoute(app, `/${name}/:category_id/:slug/:topic_index`, [], controllers.category.get);
     setupPageRoute(app, `/${name}/:category_id/:slug?`, [], controllers.category.get);

@@ -60,7 +60,7 @@ define('forum/header/unread', function () {
 
         $(window).on('action:ajaxify.end', function () {
             if (ajaxify.data.template.topic) {
-                ['', 'new', 'watched', 'unreplied', 'unresolved'].forEach(function (filter) {
+                ['', 'new', 'watched', 'unreplied'].forEach(function (filter) {
                     delete unreadTopics[filter][ajaxify.data.tid];
                 });
             }

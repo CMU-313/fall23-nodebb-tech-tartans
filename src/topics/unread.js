@@ -84,8 +84,8 @@ module.exports = function (Topics) {
     };
 
     async function getTids(params) {
-        const counts = { '': 0, new: 0, watched: 0, unreplied: 0, unresolved: 0 };
-        const tidsByFilter = { '': [], new: [], watched: [], unreplied: [], unresolved: [] };
+        const counts = { '': 0, new: 0, watched: 0, unreplied: 0 };
+        const tidsByFilter = { '': [], new: [], watched: [], unreplied: [] };
 
         if (params.uid <= 0) {
             return { counts: counts, tids: [], tidsByFilter: tidsByFilter };
@@ -169,7 +169,6 @@ module.exports = function (Topics) {
         counts[''] = tidsByFilter[''].length;
         counts.watched = tidsByFilter.watched.length;
         counts.unreplied = tidsByFilter.unreplied.length;
-        counts.unresolved = tidsByFilter.unresolved.length;
         counts.new = tidsByFilter.new.length;
 
         return {

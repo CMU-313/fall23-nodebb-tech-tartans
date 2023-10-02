@@ -163,8 +163,6 @@ TopicObject:
           type: number
         unreplied:
           type: boolean
-        unresolved:
-          type: boolean
         icons:
           type: array
           items:
