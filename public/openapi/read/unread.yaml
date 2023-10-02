@@ -180,6 +180,8 @@ get:
                               nullable: true
                             unreplied:
                               type: boolean
+                            unresolved:
+                              type: boolean
                             icons:
                               type: array
                               items:

@@ -299,6 +299,8 @@ get:
                       $ref: ../../components/schemas/TopicObject.yaml#/TopicObject
                   unreplied:
                     type: boolean
+                  unresolved:
+                    type: boolean
                   icons:
                     type: array
                     items:
