@@ -15,6 +15,11 @@
             <button component="user/invite" class="btn btn-success"><i class="fa fa-users"></i> [[users:invite]]</button>
             <!-- ENDIF showInviteButton -->
         </div>
+        <div class="col-xs-3 text-left">
+            <!-- IF showAddFriendsButton -->
+            <button component="user/addfriends" class="btn btn-success"><i class="fa fa-users"></i> Add Friends </button>
+            <!-- ENDIF showAddFriendsButton -->
+        </div>
         <!-- IF displayUserSearch -->
         <div class="col-lg-3 col-xs-9">
             <div class="search">

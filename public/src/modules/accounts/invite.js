@@ -10,6 +10,7 @@ define('accounts/invite', ['api', 'benchpress', 'bootbox', 'alerts'], function (
     Invite.handle = function () {
         $('[component="user/invite"]').on('click', function (e) {
             e.preventDefault();
+            console.log('This is a message to the console saying the invite button has been clicked');
             api.get(`/api/v3/users/${app.user.uid}/invites/groups`, {}).then((groups) => {
                 Benchpress.parse('modals/invite', { groups: groups }, function (html) {
                     bootbox.dialog({

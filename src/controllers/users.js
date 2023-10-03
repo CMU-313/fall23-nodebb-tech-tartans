@@ -208,6 +208,12 @@ async function render(req, res, data) {
         data.showInviteButton = canInvite && (!data.maximumInvites || data.invites < data.maximumInvites);
     }
 
+    // Adding new data attribute: showAddFriendsButton
+    data.showAddFriendsButton = false;
+    if (req.loggedIn) {
+        data.showAddFriendsButton = true;
+    }
+
     data['reputation:disabled'] = meta.config['reputation:disabled'];
 
     res.append('X-Total-Count', data.userCount);
