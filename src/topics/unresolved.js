@@ -5,13 +5,13 @@ const db = require('../database');
 const plugins = require('../plugins');
 
 module.exports = function (Topics) {
-    Topics.getUnresolvedTopics = async function (cid, uid, filter) {
+/*     Topics.getUnresolvedTopics = async function (cid, uid, filter) {
         return await Topics.getSortedTopics({
             cids: cid,
             uid: uid,
             filter: filter,
         });
-    };
+    }; */
 
     Topics.markUnresolved = async function (tid) {
         let data = { tid: tid };
