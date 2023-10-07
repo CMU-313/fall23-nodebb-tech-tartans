@@ -1,0 +1,16 @@
+{
+    "title": "Unresolved",
+	"no_unresolved_topics": "There are no unresolved topics.",
+	"load_more": "Load More",
+	"mark_as_resolved": "Mark as Resolved",
+	"selected": "Selected",
+	"all": "All",
+	"all_categories": "All categories",
+	"topics_marked_as_resolved.success": "Topics marked as resolved!",
+	"all-topics": "All Topics",
+	"new-topics": "New Topics",
+	"watched-topics": "Watched Topics",
+	"unreplied-topics": "Unreplied Topics",
+	"unresolved-topics": "Unresolved Topics",
+	"multiple-categories-selected": "Multiple Selected"
+}

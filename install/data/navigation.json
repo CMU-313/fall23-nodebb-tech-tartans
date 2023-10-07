@@ -21,7 +21,7 @@
 		"route": "/unresolved",
 		"title": "Unresolved",
 		"enabled": true,
-		"iconClass": "fa-inbox",
+		"iconClass": "fa-question-circle",
 		"textClass": "visible-xs-inline",
 		"text": "Unresolved",
 		"groups": ["registered-users"]

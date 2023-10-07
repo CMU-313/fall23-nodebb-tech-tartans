@@ -124,6 +124,10 @@ define('forum/topic/postTools', [
             return votes.toggleVote($(this), '.downvoted', -1);
         });
 
+        // postContainer.on('click', '[component="post/set_resolved"]', function () {
+        //     return postSetResolved($(this), getData($(this), 'data-pid'));
+        // });
+
         postContainer.on('click', '[component="post/vote-count"]', function () {
             votes.showVotes(getData($(this), 'data-pid'));
         });

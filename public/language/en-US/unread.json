@@ -1,6 +1,7 @@
 {
     "title": "Unread",
     "no_unread_topics": "There are no unread topics.",
+    "no_unresolved_topics": "There are no unresolved topics.",
     "load_more": "Load More",
     "mark_as_read": "Mark as Read",
     "selected": "Selected",
@@ -11,5 +12,6 @@
     "new-topics": "New Topics",
     "watched-topics": "Watched Topics",
     "unreplied-topics": "Unreplied Topics",
+    "unresolved-topics": "Unresolved Topics",
     "multiple-categories-selected": "Multiple Selected"
 }

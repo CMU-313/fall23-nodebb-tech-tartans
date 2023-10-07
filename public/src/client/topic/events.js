@@ -231,6 +231,20 @@ define('forum/topic/events', [
         }).toggleClass('downvoted', data.downvote);
     }
 
+    // function togglePostResolved(data) {
+    // const el = $('[data-pid="' + data.post.pid + '"][component="post/set_resolved"]').filter(function (index, el) {
+    //         return parseInt($(el).closest('[data-pid]').attr('data-pid'), 10) === parseInt(data.post.pid, 10);
+    //     });
+    //     if (!el.length) {
+    //         return;
+    //     }
+
+    //     el.attr('data-bookmarked', data.isBookmarked);
+
+    //     el.find('[component="post/bookmark/on"]').toggleClass('hidden', !data.isBookmarked);
+    //     el.find('[component="post/bookmark/off"]').toggleClass('hidden', data.isBookmarked);
+    // }
+
     function onNewNotification(data) {
         const tid = ajaxify.data.tid;
         if (data && data.tid && parseInt(data.tid, 10) === parseInt(tid, 10)) {
