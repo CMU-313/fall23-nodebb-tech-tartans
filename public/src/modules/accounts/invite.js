@@ -59,3 +59,59 @@ define('accounts/invite', ['api', 'benchpress', 'bootbox', 'alerts'], function (
 
     return Invite;
 });
+
+define('accounts/addfriends', ['api', 'benchpress', 'bootbox', 'alerts'], function (api, Benchpress, bootbox, alerts) {
+    const AddFriends = {};
+    const usernames = [];
+
+    AddFriends.handle = function () {
+        $('[component="user/addfriends"]').on('click', function (e) {
+            e.preventDefault();
+            console.log('This is a message that confirms that the add friends button was clicked');
+            api.get(`/api/users/`, {}).then((users_response) => {
+                console.log('Here is the users_response');
+                console.log(users_response);
+
+                for (let i = 0; i < users_response['users'].length; i++) {
+                    console.log("Here is each username")
+                    console.log(users_response['users'][i]['username'])
+                    usernames.push(users_response['users'][i]['username'])
+                }
+                console.log("Here are all usernames")
+                console.log(usernames)
+
+                Benchpress.parse('modals/addfriends', { usernames: usernames }, function (html) {
+                    bootbox.dialog({
+                        message: html,
+                        title: `Add Friends`,
+                        onEscape: true,
+                        buttons: {
+                            cancel: {
+                                label: `Cancel`,
+                                className: 'btn-default',
+                            },
+                            invite: {
+                                label: `Add Friend`,
+                                className: 'btn-primary',
+                                callback: AddFriends.send,
+                            },
+                        },
+                    });
+                });
+                
+            }).catch(alerts.error);
+            usernames.splice(0,usernames.length);
+            
+        });
+    };
+
+    AddFriends.send = function () {
+        const $friends_usernames = $('#added-friends-usernames');
+
+        console.log("Here are the usernames of friends added")
+        console.log($friends_usernames.val())
+
+    };
+
+    return AddFriends;
+});
