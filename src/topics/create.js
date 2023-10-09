@@ -62,6 +62,7 @@ module.exports = function (Topics) {
                 `cid:${topicData.cid}:tids:votes`,
                 `cid:${topicData.cid}:tids:posts`,
                 `cid:${topicData.cid}:tids:views`,
+                `cid:${topicData.cid}:tids:unresolved`,
             ], 0, topicData.tid),
             user.addTopicIdToUser(topicData.uid, topicData.tid, timestamp),
             db.incrObjectField(`category:${topicData.cid}`, 'topic_count'),

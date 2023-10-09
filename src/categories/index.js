@@ -18,6 +18,7 @@ require('./create')(Categories);
 require('./delete')(Categories);
 require('./topics')(Categories);
 require('./unread')(Categories);
+require('./unresolved')(Categories);
 require('./activeusers')(Categories);
 require('./recentreplies')(Categories);
 require('./update')(Categories);

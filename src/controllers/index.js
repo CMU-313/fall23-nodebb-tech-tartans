@@ -19,6 +19,7 @@ Controllers.career = require('./career');
 Controllers.categories = require('./categories');
 Controllers.category = require('./category');
 Controllers.unread = require('./unread');
+Controllers.unresolved = require('./unresolved');
 Controllers.recent = require('./recent');
 Controllers.popular = require('./popular');
 Controllers.top = require('./top');
