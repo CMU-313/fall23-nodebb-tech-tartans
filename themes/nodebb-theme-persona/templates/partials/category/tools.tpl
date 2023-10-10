@@ -32,7 +32,6 @@
                 <i class="fa fa-fw fa-unlock"></i> [[topic:thread_tools.unlock]]
             </a>
         </li>
-
         <li>
             <a component="topic/resolve" href="#">
                 <i class="fa fa-fw fa-check-double"></i> Resolve Topic
@@ -43,7 +42,6 @@
                 <i class="fa fa-fw fa-cross"></i> Unresolve Topic
             </a>
         </li>
-
         <li class="divider"></li>
 
         <li>
