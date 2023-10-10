@@ -47,6 +47,9 @@ function authenticatedRoutes() {
     setupApiRoute(router, 'post', '/:uid/invites', middlewares, controllers.write.users.invite);
     setupApiRoute(router, 'get', '/:uid/invites/groups', [...middlewares, middleware.assert.user], controllers.write.users.getInviteGroups);
 
+    // Adding my own api route for getting friends
+    setupApiRoute(router, 'post', '/:uid/addfriends', middlewares, controllers.write.users.addfriends);
+
     setupApiRoute(router, 'get', '/:uid/emails', [...middlewares, middleware.assert.user], controllers.write.users.listEmails);
     setupApiRoute(router, 'get', '/:uid/emails/:email', [...middlewares, middleware.assert.user], controllers.write.users.getEmail);
     setupApiRoute(router, 'post', '/:uid/emails/:email/confirm', [...middlewares, middleware.assert.user], controllers.write.users.confirmEmail);

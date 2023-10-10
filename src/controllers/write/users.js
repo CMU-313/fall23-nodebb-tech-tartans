@@ -197,6 +197,9 @@ Users.revokeSession = async (req, res) => {
 };
 
 Users.invite = async (req, res) => {
+
+    console.log("testing invites api");
+
     const { emails, groupsToJoin = [] } = req.body;
 
     if (!emails || !Array.isArray(groupsToJoin)) {
@@ -241,6 +244,13 @@ Users.invite = async (req, res) => {
         await user.sendInvitationEmail(req.uid, email, groupsToJoin);
     }
 
+    return helpers.formatApiResponse(200, res);
+};
+
+// Adding My Own Controller to Add Friends
+Users.addfriends = async (req, res) => {
+    const { friends_usernames = [] } = req.body;
+    console.log("Api for add friends is working and firing!");
     return helpers.formatApiResponse(200, res);
 };
 
