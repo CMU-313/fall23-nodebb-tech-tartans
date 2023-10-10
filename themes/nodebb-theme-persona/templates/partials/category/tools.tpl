@@ -33,6 +33,17 @@
             </a>
         </li>
 
+        <li>
+            <a component="topic/resolve" href="#">
+                <i class="fa fa-fw fa-check-double"></i> Resolve Topic
+            </a>
+        </li>
+        <li>
+            <a component="topic/unresolve" href="#" class="hidden">
+                <i class="fa fa-fw fa-cross"></i> Unresolve Topic
+            </a>
+        </li>
+
         <li class="divider"></li>
 
         <li>

@@ -52,6 +52,16 @@ define('forum/topic/threadTools', [
             return false;
         });
 
+        topicContainer.on('click', '[component="topic/resolve"]', function () {
+            topicCommand('put', '/resolve', 'resolve');
+            return false;
+        });
+
+        topicContainer.on('click', '[component="topic/unresolve"]', function () {
+            topicCommand('del', '/resolve', 'unresolve');
+            return false;
+        });
+
         topicContainer.on('click', '[component="topic/event/delete"]', function () {
             const eventId = $(this).attr('data-topic-event-id');
             const eventEl = $(this).parents('[component="topic/event"]');
@@ -329,6 +339,21 @@ define('forum/topic/threadTools', [
         posts.addTopicEvents(data.events);
     };
 
+
+    ThreadTools.setResolvedState = function (data) {
+        const threadEl = components.get('topic');
+        if (parseInt(data.tid, 10) !== parseInt(threadEl.attr('data-tid'), 10)) {
+            return;
+        }
+
+        components.get('topic/resolve').toggleClass('hidden', data.resolved).parent().attr('hidden', data.resolved ? '' : null);
+        components.get('topic/unresolve').toggleClass('hidden', !data.resolved).parent().attr('hidden', !data.resolved ? '' : null);
+        const icon = $('[component="topic/labels"] [component="topic/resolved"]');
+        icon.toggleClass('hidden', !data.resolved);
+        ajaxify.data.resolved = data.resolved;
+
+        posts.addTopicEvents(data.events);
+    };
 
     ThreadTools.setPinnedState = function (data) {
         const threadEl = components.get('topic');
