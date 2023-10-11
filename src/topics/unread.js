@@ -84,8 +84,8 @@ module.exports = function (Topics) {
     };
 
     async function getTids(params) {
-        const counts = { '': 0, new: 0, watched: 0, unreplied: 0 };
-        const tidsByFilter = { '': [], new: [], watched: [], unreplied: [] };
+        const counts = { '': 0, new: 0, watched: 0, unreplied: 0 , unresolved: 0 };
+        const tidsByFilter = { '': [], new: [], watched: [], unreplied: [] , unresolved: [] };
 
         if (params.uid <= 0) {
             return { counts: counts, tids: [], tidsByFilter: tidsByFilter };
@@ -136,7 +136,7 @@ module.exports = function (Topics) {
         });
 
         tids = await privileges.topics.filterTids('topics:read', tids, params.uid);
-        const topicData = (await Topics.getTopicsFields(tids, ['tid', 'cid', 'uid', 'postcount', 'deleted', 'scheduled']))
+        const topicData = (await Topics.getTopicsFields(tids, ['tid', 'cid', 'uid', 'postcount', 'deleted', 'scheduled', 'unresolved']))
             .filter(t => t.scheduled || !t.deleted);
         const topicCids = _.uniq(topicData.map(topic => topic.cid)).filter(Boolean);
 
@@ -163,6 +163,10 @@ module.exports = function (Topics) {
                 if (!userReadTimes[topic.tid]) {
                     tidsByFilter.new.push(topic.tid);
                 }
+
+                if (topic.unresolved) {
+                    tidsByFilter.unresolved.push(topic.tid);
+                }
             }
         });
 
@@ -170,6 +174,7 @@ module.exports = function (Topics) {
         counts.watched = tidsByFilter.watched.length;
         counts.unreplied = tidsByFilter.unreplied.length;
         counts.new = tidsByFilter.new.length;
+        counts.unresolved = tidsByFilter.unresolved.length;
 
         return {
             counts: counts,
