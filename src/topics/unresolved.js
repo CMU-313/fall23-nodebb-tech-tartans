@@ -101,6 +101,10 @@ module.exports = function (Topics) {
         followedTids.forEach((t) => {
             isTopicsFollowed[t.value] = true;
         });
+        const isUnresolved = {};
+        tids_unresolved.forEach((t) => {
+            isUnresolved[t.value] = true;
+        })
         const unreadFollowed = await db.isSortedSetMembers(
             `uid:${params.uid}:followed_tids`, tids_unread.map(t => t.value)
         );
@@ -109,24 +113,15 @@ module.exports = function (Topics) {
             isTopicsFollowed[t.value] = unreadFollowed[i];
         });
 
-        if(!tids_unresolved.length) {
-            throw new Error('[[error:no-topic]]');
-        }
-
         const unresolvedTopics = tids_unresolved
-            // .filter(t => tids_unresolved.includes(t.value))
             .sort((a, b) => b.score - a.score);
-
-        if (!categoryTids.length) {
-            throw new Error('[[error:no-topic]]');
-        }
 
         let tids = _.uniq(unresolvedTopics.map(topic => topic.value)).slice(0, 200);
 
         if (!tids.length) {
             return { counts: counts, tids: tids, tidsByFilter: tidsByFilter };
         }
-        // throw new Error('[[error:no-topic]]');
+
         const blockedUids = await user.blocks.list(params.uid);
 
         tids = await filterTidsThatHaveBlockedPosts({
@@ -165,7 +160,7 @@ module.exports = function (Topics) {
                     tidsByFilter.new.push(topic.tid);
                 }
 
-                if (topic.unresolved) {
+                if (isUnresolved[topic.tid]) {
                     tidsByFilter.unresolved.push(topic.tid);
                 }
             }

@@ -93,12 +93,13 @@ module.exports = function (Topics) {
 
         params.cutoff = await Topics.unreadCutoff(params.uid);
 
-        const [followedTids, ignoredTids, categoryTids, userScores, tids_unread] = await Promise.all([
+        const [followedTids, ignoredTids, categoryTids, userScores, tids_unread, tids_unresolved] = await Promise.all([
             getFollowedTids(params),
             user.getIgnoredTids(params.uid, 0, -1),
             getCategoryTids(params),
             db.getSortedSetRevRangeByScoreWithScores(`uid:${params.uid}:tids_read`, 0, -1, '+inf', params.cutoff),
             db.getSortedSetRevRangeWithScores(`uid:${params.uid}:tids_unread`, 0, -1),
+            db.getSortedSetRevRangeWithScores(`topics:unresolved`, 0, -1),
         ]);
 
         const userReadTimes = _.mapValues(_.keyBy(userScores, 'value'), 'score');
@@ -106,6 +107,10 @@ module.exports = function (Topics) {
         followedTids.forEach((t) => {
             isTopicsFollowed[t.value] = true;
         });
+        const isUnresolved = {};
+        tids_unresolved.forEach((t) => {
+            isUnresolved[t.value] = true;
+        })
         const unreadFollowed = await db.isSortedSetMembers(
             `uid:${params.uid}:followed_tids`, tids_unread.map(t => t.value)
         );
@@ -164,7 +169,7 @@ module.exports = function (Topics) {
                     tidsByFilter.new.push(topic.tid);
                 }
 
-                if (topic.unresolved) {
+                if (isUnresolved[topic.tid]) {
                     tidsByFilter.unresolved.push(topic.tid);
                 }
             }
@@ -393,7 +398,7 @@ module.exports = function (Topics) {
     };
 
     Topics.filterUnresolvedTids = async function (tids) {
-        const unresolvedTids = await db.sortedSetMembers('topics:unresolved', tids);
+        const unresolvedTids = await db.getSortedSetRevRangeWithScores(`topics:unresolved`, 0, -1);
         return unresolvedTids;
     };
 };
