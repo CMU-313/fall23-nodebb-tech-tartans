@@ -52,6 +52,16 @@ define('forum/category/tools', [
             return false;
         });
 
+        components.get('topic/resolve').on('click', function () {
+            categoryCommand('put', '/resolve', 'resolve', onCommandComplete);
+            return false;
+        });
+
+        components.get('topic/unresolve').on('click', function () {
+            categoryCommand('del', '/resolve', 'unresolve', onCommandComplete);
+            return false;
+        });
+
         // todo: should also use categoryCommand, but no write api call exists for this yet
         components.get('topic/mark-unread-for-all').on('click', function () {
             const tids = topicSelect.getSelectedTids();
@@ -121,6 +131,8 @@ define('forum/category/tools', [
         socket.on('event:topic_unlocked', setLockedState);
         socket.on('event:topic_pinned', setPinnedState);
         socket.on('event:topic_unpinned', setPinnedState);
+        socket.on('event:topic_resolved', setResolvedState);
+        socket.on('event:topic_unresolved', setResolvedState);
         socket.on('event:topic_moved', onTopicMoved);
     };
 
@@ -167,6 +179,8 @@ define('forum/category/tools', [
         socket.removeListener('event:topic_unlocked', setLockedState);
         socket.removeListener('event:topic_pinned', setPinnedState);
         socket.removeListener('event:topic_unpinned', setPinnedState);
+        socket.removeListener('event:topic_pinned', setResolvedState);
+        socket.removeListener('event:topic_unpinned', setResolvedState);
         socket.removeListener('event:topic_moved', onTopicMoved);
     };
 
@@ -254,6 +268,13 @@ define('forum/category/tools', [
         const topic = getTopicEl(data.tid);
         topic.toggleClass('pinned', data.isPinned);
         topic.find('[component="topic/pinned"]').toggleClass('hide', !data.isPinned);
+        ajaxify.refresh();
+    }
+
+    function setResolvedState(data) {
+        const topic = getTopicEl(data.tid);
+        topic.toggleClass('unresolved', !data.isResolved);
+        topic.find('[component="topic/resolved"]').toggleClass('hide', !data.isResolved);
         ajaxify.refresh();
     }
 
