@@ -249,8 +249,13 @@ Users.invite = async (req, res) => {
 
 // Adding My Own Controller to Add Friends
 Users.addfriends = async (req, res) => {
-    const { friends_usernames = [] } = req.body;
+    const { friends_data_pairs = [] } = req.body;
     console.log("Api for add friends is working and firing!");
+
+    for (let i = 0; i < friends_data_pairs.length; i++) {
+        await db.sortedSetAdd('friends:uid', req.user.uid, friends_data_pairs[i][0]);
+    }
+    
     return helpers.formatApiResponse(200, res);
 };
 

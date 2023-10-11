@@ -72,7 +72,7 @@ define('accounts/invite', ['api', 'benchpress', 'bootbox', 'alerts'], function (
 
 define('accounts/addfriends', ['api', 'benchpress', 'bootbox', 'alerts'], function (api, Benchpress, bootbox, alerts) {
     const AddFriends = {};
-    const usernames = [];
+    const friends_data = [];
 
     AddFriends.handle = function () {
         $('[component="user/addfriends"]').on('click', function (e) {
@@ -85,7 +85,8 @@ define('accounts/addfriends', ['api', 'benchpress', 'bootbox', 'alerts'], functi
                 for (let i = 0; i < users_response['users'].length; i++) {
                     // console.log("Here is each username")
                     // console.log(users_response['users'][i]['username'])
-                    usernames.push(users_response['users'][i]['username']);
+                    // usernames.push(users_response['users'][i]['username']);
+                    friends_data.push([users_response['users'][i]['uid'], users_response['users'][i]['username']]);
                 }
 
                 
@@ -98,7 +99,7 @@ define('accounts/addfriends', ['api', 'benchpress', 'bootbox', 'alerts'], functi
                 // console.log("Here are all usernames")
                 // console.log(usernames)
 
-                Benchpress.parse('modals/addfriends', { usernames: usernames }, function (html) {
+                Benchpress.parse('modals/addfriends', { friends_data: friends_data }, function (html) {
                     bootbox.dialog({
                         message: html,
                         title: `Add Friends`,
@@ -118,19 +119,19 @@ define('accounts/addfriends', ['api', 'benchpress', 'bootbox', 'alerts'], functi
                 });
                 
             }).catch(alerts.error);
-            usernames.splice(0,usernames.length);
+            friends_data.splice(0,friends_data.length);
             
         });
     };
 
     AddFriends.send = function () {
-        const $friends_usernames = $('#added-friends-usernames');
+        const $friends_data = $('#added-friends-data');
 
-        console.log("Here are the usernames of friends added");
-        console.log($friends_usernames.val());
+        console.log("Here are the (user_id, username) pairs of friends added");
+        console.log($friends_data.val());
 
         const data = {
-            friends_usernames: $friends_usernames.val(),
+            friends_data: $friends_data.val(),
         };
 
         api.post(`/users/${app.user.uid}/addfriends`, data).then(() => {
