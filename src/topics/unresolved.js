@@ -193,7 +193,7 @@ module.exports = function (Topics) {
             return [];
         }
         const cids = params.cid || await user.getWatchedCategories(params.uid);
-        const keys = cids.map(cid => `cid:${cid}:tids:lastposttime`);
+        const keys = cids.map(cid => `cid:${cid}:tids`);
         return await db.getSortedSetRevRangeByScoreWithScores(keys, 0, -1, '+inf', params.cutoff);
     }
 
