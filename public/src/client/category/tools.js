@@ -179,8 +179,8 @@ define('forum/category/tools', [
         socket.removeListener('event:topic_unlocked', setLockedState);
         socket.removeListener('event:topic_pinned', setPinnedState);
         socket.removeListener('event:topic_unpinned', setPinnedState);
-        socket.removeListener('event:topic_pinned', setResolvedState);
-        socket.removeListener('event:topic_unpinned', setResolvedState);
+        socket.removeListener('event:topic_resolved', setResolvedState);
+        socket.removeListener('event:topic_unresolved', setResolvedState);
         socket.removeListener('event:topic_moved', onTopicMoved);
     };
 
@@ -204,6 +204,7 @@ define('forum/category/tools', [
         const areAllDeleted = areAll(isTopicDeleted, tids);
         const isAnyPinned = isAny(isTopicPinned, tids);
         const isAnyLocked = isAny(isTopicLocked, tids);
+        const isAnyResolved = isAny(isTopicResolved, tids);
         const isAnyScheduled = isAny(isTopicScheduled, tids);
         const areAllScheduled = areAll(isTopicScheduled, tids);
 
@@ -216,6 +217,9 @@ define('forum/category/tools', [
 
         components.get('topic/pin').toggleClass('hidden', areAllScheduled || isAnyPinned);
         components.get('topic/unpin').toggleClass('hidden', areAllScheduled || !isAnyPinned);
+
+        components.get('topic/resolve').toggleClass('hidden', !isAnyResolved);
+        components.get('topic/unresolve').toggleClass('hidden', isAnyResolved);
 
         components.get('topic/merge').toggleClass('hidden', isAnyScheduled);
     }
@@ -250,6 +254,10 @@ define('forum/category/tools', [
         return getTopicEl(tid).hasClass('pinned');
     }
 
+    function isTopicResolved(tid) {
+        return getTopicEl(tid).hasClass('resolve');
+    }
+
     function isTopicScheduled(tid) {
         return getTopicEl(tid).hasClass('scheduled');
     }
@@ -273,7 +281,7 @@ define('forum/category/tools', [
 
     function setResolvedState(data) {
         const topic = getTopicEl(data.tid);
-        topic.toggleClass('unresolved', !data.isResolved);
+        topic.toggleClass('unresolve', !data.isResolved);
         topic.find('[component="topic/resolved"]').toggleClass('hide', !data.isResolved);
         ajaxify.refresh();
     }
