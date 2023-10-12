@@ -49,6 +49,9 @@ module.exports = function (User) {
         // Modifying user data to include friends attribute
         const friends_set = new Set();
 
+        // Adding an object that stores friends
+        // await db.setObject(`user:${uid}`, friends_set);
+
         let userData = {
             username: data.username,
             userslug: data.userslug,
@@ -87,7 +90,7 @@ module.exports = function (User) {
 
         await db.setObject(`user:${uid}`, userData);
 
-        // Modifying bulk add to include set of friends corresponding to user id
+        // Adding friends set as attribute for bulk add
 
         const bulkAdd = [
             ['username:uid', userData.uid, userData.username],

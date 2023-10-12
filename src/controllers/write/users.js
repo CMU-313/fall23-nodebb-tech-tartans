@@ -248,16 +248,81 @@ Users.invite = async (req, res) => {
 };
 
 // Adding My Own Controller to Add Friends
-Users.addfriends = async (req, res) => {
-    const { friends_data_pairs = [] } = req.body;
-    console.log("Api for add friends is working and firing!");
 
-    for (let i = 0; i < friends_data_pairs.length; i++) {
-        await db.sortedSetAdd('friends:uid', req.user.uid, friends_data_pairs[i][0]);
-    }
-    
-    return helpers.formatApiResponse(200, res);
+Users.addfriends = (req, res) => {
+    const { friends_data_pairs = [] } = req.body;
+    console.log("API for adding friends is working and firing!");
+
+    const uid = req.user.uid;
+
+    // Retrieve the user's current data
+    db.getObject(`user:${uid}`, (error, user_data) => {
+        if (error) {
+            console.error('Error:', error);
+            return helpers.formatApiResponse(500, res, 'Internal Server Error');
+        }
+
+        if (!user_data) {
+            user_data = {
+                friends: new Set(), // Initialize the friends property as a Set
+            };
+        }
+
+        for (let i = 0; i < friends_data_pairs.length; i++) {
+            if (typeof friends_data_pairs[i][0] != 'number' || friends_data_pairs[i].length != 2) {
+                console.error('Error:', error);
+                return helpers.formatApiResponse(500, res, 'Internal Server Error');
+            }
+            else {
+                user_data.friends.add(friends_data_pairs[i][0]);
+            }
+        }
+
+        // Update the user's data in the database
+        db.setObject(`user:${uid}`, user_data, (error) => {
+            if (error) {
+                console.error('Error:', error);
+                return helpers.formatApiResponse(500, res, 'Internal Server Error');
+            }
+            // return helpers.formatApiResponse(200, res, 'Friends added successfully');
+            return helpers.formatApiResponse(200, res, 'Friends blah blah blah');
+        });
+    });
 };
+
+
+
+// Users.addfriends = async (req, res) => {
+//     const { friends_data_pairs = [] } = req.body;
+//     console.log("Api for add friends is working and firing!");
+
+
+//     const user_data = {}
+//     await db.getObjectField(`user:${req.user.uid}`, (error, user_data) => {
+//         if (error) {
+//         console.error('Error:', error);
+//         return;
+//         }
+        
+//         if (user_data) {
+//             for (let i = 0; i < friends_data_pairs.length; i++) {
+//                 // await db.sortedSetAdd('friends:uid', req.user.uid, friends_data_pairs[i][0]);
+//                 user_data.friends.add(friends_data_pairs[i][0])
+//             }
+            
+//         } 
+        
+//     });
+//     await db.setObject(`user:${uid}`, user_data);
+
+//     // for (let i = 0; i < friends_data_pairs.length; i++) {
+//     //     // await db.sortedSetAdd('friends:uid', req.user.uid, friends_data_pairs[i][0]);
+
+        
+//     // }
+
+//     return helpers.formatApiResponse(200, res);
+// };
 
 Users.getInviteGroups = async function (req, res) {
     if (parseInt(req.params.uid, 10) !== parseInt(req.user.uid, 10)) {
