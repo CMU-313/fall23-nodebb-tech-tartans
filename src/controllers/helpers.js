@@ -96,9 +96,9 @@ helpers.buildFilters = function (url, filter, query) {
         icon: 'fa-reply',
     }, {
         name: 'Unresolved Topics',
-        url: url + helpers.buildQueryString(query, 'filter', 'unresolved'),
-        selected: filter === 'unresolved',
-        filter: 'unresolved',
+        url: url + helpers.buildQueryString(query, 'filter', 'unreplied'),
+        selected: filter === 'unreplied',
+        filter: 'unreplied',
         icon: 'fa-question',
     }];
 };
