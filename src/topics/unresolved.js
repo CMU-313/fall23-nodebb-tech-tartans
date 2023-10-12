@@ -7,11 +7,8 @@ const _ = require('lodash');
 const db = require('../database');
 const user = require('../user');
 const posts = require('../posts');
-const notifications = require('../notifications');
 const categories = require('../categories');
 const privileges = require('../privileges');
-const meta = require('../meta');
-const utils = require('../utils');
 const plugins = require('../plugins');
 
 module.exports = function (Topics) {
@@ -78,8 +75,8 @@ module.exports = function (Topics) {
     };
 
     async function getTids(params) {
-        const counts = { '': 0, new: 0, watched: 0, unreplied: 0 , unresolved: 0 };
-        const tidsByFilter = { '': [], new: [], watched: [], unreplied: [] , unresolved: [] };
+        const counts = { '': 0, new: 0, watched: 0, unreplied: 0, unresolved: 0 };
+        const tidsByFilter = { '': [], new: [], watched: [], unreplied: [], unresolved: [] };
 
         if (params.uid <= 0) {
             return { counts: counts, tids: [], tidsByFilter: tidsByFilter };
@@ -104,7 +101,7 @@ module.exports = function (Topics) {
         const isUnresolved = {};
         tids_unresolved.forEach((t) => {
             isUnresolved[t.value] = true;
-        })
+        });
         const unreadFollowed = await db.isSortedSetMembers(
             `uid:${params.uid}:followed_tids`, tids_unread.map(t => t.value)
         );
@@ -114,6 +111,7 @@ module.exports = function (Topics) {
         });
 
         const unresolvedTopics = tids_unresolved
+            .filter(t => !ignoredTids.includes(t.value))
             .sort((a, b) => b.score - a.score);
 
         let tids = _.uniq(unresolvedTopics.map(topic => topic.value)).slice(0, 200);
@@ -219,6 +217,34 @@ module.exports = function (Topics) {
             topicTimestamp: topicScores[tid],
             userLastReadTimestamp: userScores[tid],
         }));
+    }
+
+    async function doesTidHaveUnblockedUnreadPosts(tid, params) {
+        const { userLastReadTimestamp } = params;
+        if (!userLastReadTimestamp) {
+            return true;
+        }
+        let start = 0;
+        const count = 3;
+        let done = false;
+        let hasUnblockedUnread = params.topicTimestamp > userLastReadTimestamp;
+        if (!params.blockedUids.length) {
+            return hasUnblockedUnread;
+        }
+        while (!done) {
+            /* eslint-disable no-await-in-loop */
+            const pidsSinceLastVisit = await db.getSortedSetRangeByScore(`tid:${tid}:posts`, start, count, userLastReadTimestamp, '+inf');
+            if (!pidsSinceLastVisit.length) {
+                return hasUnblockedUnread;
+            }
+            let postData = await posts.getPostsFields(pidsSinceLastVisit, ['pid', 'uid']);
+            postData = postData.filter(post => !params.blockedUids.includes(parseInt(post.uid, 10)));
+
+            done = postData.length > 0;
+            hasUnblockedUnread = postData.length > 0;
+            start += count;
+        }
+        return hasUnblockedUnread;
     }
 
     Topics.markUnresolved = async function (tid) {

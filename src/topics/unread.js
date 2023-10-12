@@ -84,8 +84,8 @@ module.exports = function (Topics) {
     };
 
     async function getTids(params) {
-        const counts = { '': 0, new: 0, watched: 0, unreplied: 0 , unresolved: 0 };
-        const tidsByFilter = { '': [], new: [], watched: [], unreplied: [] , unresolved: [] };
+        const counts = { '': 0, new: 0, watched: 0, unreplied: 0, unresolved: 0 };
+        const tidsByFilter = { '': [], new: [], watched: [], unreplied: [], unresolved: [] };
 
         if (params.uid <= 0) {
             return { counts: counts, tids: [], tidsByFilter: tidsByFilter };
@@ -110,7 +110,7 @@ module.exports = function (Topics) {
         const isUnresolved = {};
         tids_unresolved.forEach((t) => {
             isUnresolved[t.value] = true;
-        })
+        });
         const unreadFollowed = await db.isSortedSetMembers(
             `uid:${params.uid}:followed_tids`, tids_unread.map(t => t.value)
         );
@@ -399,6 +399,7 @@ module.exports = function (Topics) {
 
     Topics.filterUnresolvedTids = async function (tids) {
         const unresolvedTids = await db.getSortedSetRevRangeWithScores(`topics:unresolved`, 0, -1);
-        return unresolvedTids;
+        const unresolvedTidSet = new Set(unresolvedTids.map(item => item.member));
+        return tids.filter(tid => unresolvedTidSet.has(tid));
     };
 };

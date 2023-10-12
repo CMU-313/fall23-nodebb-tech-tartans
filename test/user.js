@@ -1976,6 +1976,7 @@ describe('User', () => {
                     '': 4,
                     new: 4,
                     unreplied: 4,
+                    unresolved: 4,
                     watched: 0,
                 },
                 unreadNewTopicCount: 4,
