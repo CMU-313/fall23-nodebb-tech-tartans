@@ -230,7 +230,6 @@
 	"session-mismatch-text": "It looks like your login session no longer matches with the server. Please refresh this page.",
 
 	"no-topics-selected": "No topics selected!",
-	"topic-already-resolved": "Topic already resolved!",
 	"cant-move-to-same-topic": "Can't move post to same topic!",
 	"cant-move-topic-to-same-category": "Can't move topic to the same category!",
 
