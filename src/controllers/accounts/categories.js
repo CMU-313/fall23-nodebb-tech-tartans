@@ -31,6 +31,7 @@ categoriesController.get = async function (req, res, next) {
             category.isIgnored = states[category.cid] === categories.watchStates.ignoring;
             category.isWatched = states[category.cid] === categories.watchStates.watching;
             category.isNotWatched = states[category.cid] === categories.watchStates.notwatching;
+            category.isFriend = states[category.cid] === categories.watchStates.friends;
         }
     });
     userData.categories = categoriesData;

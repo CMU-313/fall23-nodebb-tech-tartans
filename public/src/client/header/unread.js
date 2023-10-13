@@ -6,6 +6,7 @@ define('forum/header/unread', function () {
         ignoring: 1,
         notwatching: 2,
         watching: 3,
+        friends: 4,
     };
 
     unread.initUnreadTopics = function () {
