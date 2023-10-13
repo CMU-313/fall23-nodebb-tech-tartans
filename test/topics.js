@@ -706,7 +706,7 @@ describe('Topic\'s', () => {
         it('should resolve topic', async () => {
             await apiTopics.resolve({ uid: adminUid }, { tids: [newTopic.tid], cid: categoryObj.cid });
             const resolved = await topics.getTopicField(newTopic.tid, 'resolved');
-            assert.strictEqual(resolved, '1');
+            assert.equal(resolved, 1);
         });
 
         it('should not unresolve topic', async () => {
