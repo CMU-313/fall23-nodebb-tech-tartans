@@ -713,7 +713,7 @@ describe('Topic\'s', () => {
             try {
                 await apiTopics.unresolve({ uid: adminUid }, { tids: [newTopic.tid], cid: categoryObj.cid });
             } catch (err) {
-                return assert.strictEqual(err.message, "Topic already resolved!");
+                return assert.strictEqual(err.message, 'Topic already resolved!');
             }
         });
 
