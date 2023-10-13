@@ -8,6 +8,7 @@ module.exports = function (Categories) {
         ignoring: 1,
         notwatching: 2,
         watching: 3,
+        friends: 4,
     };
 
     Categories.isIgnored = async function (cids, uid) {

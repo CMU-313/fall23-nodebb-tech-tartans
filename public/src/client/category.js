@@ -64,7 +64,7 @@ define('forum/category', [
     }
 
     function handleIgnoreWatch(cid) {
-        $('[component="category/watching"], [component="category/ignoring"], [component="category/notwatching"]').on('click', function () {
+        $('[component="category/watching"], [component="category/ignoring"], [component="category/notwatching"], [component="category/friends"]').on('click', function () {
             const $this = $(this);
             const state = $this.attr('data-state');
 

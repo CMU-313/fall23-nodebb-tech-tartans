@@ -11,7 +11,7 @@ define('forum/account/categories', ['forum/account/header', 'alerts'], function 
             handleIgnoreWatch(category.cid);
         });
 
-        $('[component="category/watch/all"]').find('[component="category/watching"], [component="category/ignoring"], [component="category/notwatching"]').on('click', function () {
+        $('[component="category/watch/all"]').find('[component="category/watching"], [component="category/ignoring"], [component="category/notwatching"], [component="category/friends"]').on('click', function () {
             const cids = [];
             const state = $(this).attr('data-state');
             $('[data-parent-cid="0"]').each(function (index, el) {
@@ -29,7 +29,7 @@ define('forum/account/categories', ['forum/account/header', 'alerts'], function 
 
     function handleIgnoreWatch(cid) {
         const category = $('[data-cid="' + cid + '"]');
-        category.find('[component="category/watching"], [component="category/ignoring"], [component="category/notwatching"]').on('click', function () {
+        category.find('[component="category/watching"], [component="category/ignoring"], [component="category/notwatching"], [component="category/friends"]').on('click', function () {
             const $this = $(this);
             const state = $this.attr('data-state');
 
@@ -55,6 +55,9 @@ define('forum/account/categories', ['forum/account/header', 'alerts'], function 
 
             category.find('[component="category/ignoring/menu"]').toggleClass('hidden', state !== 'ignoring');
             category.find('[component="category/ignoring/check"]').toggleClass('fa-check', state === 'ignoring');
+
+            category.find('[component="category/friends/menu"]').toggleClass('hidden', state !== 'friends');
+            category.find('[component="category/friends/check"]').toggleClass('fa-check', state === 'friends');
         });
     }
 
