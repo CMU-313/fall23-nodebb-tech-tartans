@@ -133,7 +133,7 @@ module.exports = function (Topics) {
         }
 
         if (topicData.resolved) {
-            throw new Error('[[error:topic-already-resolved]]');
+            throw new Error('Topic already resolved!');
         }
 
         const promises = [
