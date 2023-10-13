@@ -24,7 +24,7 @@ usersController.index = async function (req, res, next) {
 
         // Adding New Friends Tab (implemented as online for right now)
         // friends: usersController.getOnlineUsers,
-        friends: usersController.getUsersFriends,
+        friends: usersController.getOnlineUsers,
     };
 
     if (req.query.query) {
@@ -72,12 +72,6 @@ usersController.getOnlineUsers = async function (req, res) {
 
 usersController.getUsersSortedByPosts = async function (req, res) {
     await usersController.renderUsersPage('users:postcount', req, res);
-};
-
-// Adding getFriends function in users controller
-usersController.getUsersFriends = async function (req, res) {
-    console.log('Hello. This is a test');
-    await usersController.renderUsersPage('friends:uid', req, res);
 };
 
 usersController.getUsersSortedByReputation = async function (req, res, next) {

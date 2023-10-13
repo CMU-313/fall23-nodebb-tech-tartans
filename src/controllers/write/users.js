@@ -251,7 +251,7 @@ Users.invite = async (req, res) => {
 
 Users.addfriends = (req, res) => {
     const { friends_data_pairs = [] } = req.body;
-    console.log("API for adding friends is working and firing!");
+    console.log("Testing addfriends API Endpoint");
 
     const uid = req.user.uid;
 
@@ -284,8 +284,8 @@ Users.addfriends = (req, res) => {
                 console.error('Error:', error);
                 return helpers.formatApiResponse(500, res, 'Internal Server Error');
             }
-            // return helpers.formatApiResponse(200, res, 'Friends added successfully');
-            return helpers.formatApiResponse(200, res, 'Friends blah blah blah');
+            return helpers.formatApiResponse(200, res, 'Friends added successfully');
+            // return helpers.formatApiResponse(200, res, 'Friends blah blah blah');
         });
     });
 };
