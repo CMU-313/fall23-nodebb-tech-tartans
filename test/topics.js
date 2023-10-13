@@ -242,6 +242,19 @@ describe('Topic\'s', () => {
             assert.strictEqual(replyResult.body.response.user.displayname, 'guest124');
             meta.config.allowGuestHandles = oldValue;
         });
+
+        it('should add a new topic in the unresolved sorted set', async () => {
+            topics.post({
+                uid: topic.userId,
+                title: topic.title,
+                content: topic.content,
+                cid: topic.categoryId,
+            }, (err, result) => {
+                assert.ifError(err);
+                assert(db.isSortedSetMember('topics:resolved', result.topicData.tid));
+                assert(db.isSortedSetMember(`cid:${topic.categoryId}:tids:unresolved`, result.topicData.tid));
+            });
+        });
     });
 
     describe('.reply', () => {
@@ -690,6 +703,20 @@ describe('Topic\'s', () => {
             assert.strictEqual(pinned, 0);
         });
 
+        it('should resolve topic', async () => {
+            await apiTopics.resolve({ uid: adminUid }, { tids: [newTopic.tid], cid: categoryObj.cid });
+            const resolved = await topics.getTopicField(newTopic.tid, 'resolved');
+            assert.strictEqual(resolved, '1');
+        });
+
+        it('should not unresolve topic', async () => {
+            try {
+                await apiTopics.unresolve({ uid: adminUid }, { tids: [newTopic.tid], cid: categoryObj.cid });
+            } catch (err) {
+                return assert.strictEqual(err.message, '[[error:topic-already-resolved]]');
+            }
+        });
+
         it('should move all topics', (done) => {
             socketTopics.moveAll({ uid: adminUid }, { cid: moveCid, currentCid: categoryObj.cid }, (err) => {
                 assert.ifError(err);
@@ -851,6 +878,24 @@ describe('Topic\'s', () => {
             await apiTopics.purge({ uid: adminUid }, { tids: [newTopic.tid], cid: categoryObj.cid });
             const isMember = await db.isSortedSetMember(`uid:${followerUid}:followed_tids`, newTopic.tid);
             assert.strictEqual(false, isMember);
+        });
+
+        it('should delete topic from the unresolved or resolved set', async () => {
+            const topic1 = await topics.post({
+                uid: adminUid,
+                title: 'topic for purge test of unresolved/resolved set',
+                content: 'topic content',
+                cid: categoryObj.cid,
+            });
+            await apiTopics.purge({ uid: adminUid }, { tids: [topic1.topicData.tid], cid: topic1.topicData.cid });
+            const isMember1 = await db.isSortedSetMember('topics:resolved', topic1.topicData.tid);
+            assert.strictEqual(false, isMember1);
+            const isMember2 = await db.isSortedSetMember('topics:unresolved', topic1.topicData.tid);
+            assert.strictEqual(false, isMember2);
+            const isMember3 = await db.isSortedSetMember(`cid:${topic1.topicData.cid}:tids:resolved`, topic1.topicData.tid);
+            assert.strictEqual(false, isMember3);
+            const isMember4 = await db.isSortedSetMember(`cid:${topic1.topicData.cid}:tids:unresolved`, topic1.topicData.tid);
+            assert.strictEqual(false, isMember4);
         });
 
         it('should not allow user to restore their topic if it was deleted by an admin', async () => {
@@ -1072,6 +1117,51 @@ describe('Topic\'s', () => {
                     done();
                 },
             ], done);
+        });
+    });
+
+    describe('unresolve', () => {
+        let tid;
+        let mainPid;
+        let uid;
+        before((done) => {
+            async.parallel({
+                topic: function (next) {
+                    topics.post({ uid: topic.userId, title: 'unresolved topic', content: 'unresolved topic content', cid: topic.categoryId }, next);
+                },
+                joeUid: function (next) {
+                    User.create({ username: 'regularJoe' }, next);
+                },
+            }, (err, results) => {
+                assert.ifError(err);
+                tid = results.topic.topicData.tid;
+                mainPid = results.topic.postData.pid;
+                uid = results.joeUid;
+                done();
+            });
+        });
+
+        it('should return topic as unresolved if topic is created', async () => {
+            const uid = await User.create({ username: 'regularJoe' });
+            const result = await topics.post({ uid: adminUid, title: 'created unresolved', content: 'created unresolved content', cid: categoryObj.cid });
+            const unresolvedTids = await topics.getUnresolvedTids({ cid: 0, uid: uid });
+            assert(unresolvedTids.includes(result.topicData.tid));
+        });
+
+        it('should not return topic as unresolved if topic is marked as resolved', async () => {
+            const uid = await User.create({ username: 'regularJoe' });
+            const result = await topics.post({ uid: adminUid, title: 'resolved unresolved', content: 'resolved unresolved content', cid: categoryObj.cid });
+            await apiTopics.resolve({ uid: adminUid }, { tids: [result.topicData.tid], cid: categoryObj.cid });
+            const unresolvedTids = await topics.getUnresolvedTids({ cid: 0, uid: uid });
+            assert(!unresolvedTids.includes(result.topicData.tid));
+        });
+
+        it('should not return topic as unresolved if topic is deleted', async () => {
+            const uid = await User.create({ username: 'regularJoe' });
+            const result = await topics.post({ uid: adminUid, title: 'deleted unresolved', content: 'deleted unresolved content', cid: categoryObj.cid });
+            await topics.delete(result.topicData.tid, adminUid);
+            const unresolvedTids = await topics.getUnresolvedTids({ cid: 0, uid: uid });
+            assert(!unresolvedTids.includes(result.topicData.tid));
         });
     });
 

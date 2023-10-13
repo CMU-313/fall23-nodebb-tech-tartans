@@ -132,14 +132,20 @@ module.exports = function (Topics) {
             throw new Error('[[error:no-topic]]');
         }
 
+        if (topicData.resolved) {
+            throw new Error('[[error:topic-already-resolved]]');
+        }
+
         const promises = [
             Topics.setTopicField(tid, 'resolved', res ? 1 : 0),
         ];
 
         if (res) {
-            promises.push(db.sortedSetAdd(`cid:${topicData.cid}:tids:resolved`, Date.now(), tid));
+            promises.push(db.sortedSetRemove('topics:unresolved', tid));
+            promises.push(db.sortedSetRemove(`cid:${topicData.cid}:tids:unresolved`, tid));
         } else {
-            promises.push(db.sortedSetRemove(`cid:${topicData.cid}:tids:resolved`, tid));
+            promises.push(db.sortedSetAdd('topics:unresolved', tid));
+            promises.push(db.sortedSetAdd(`cid:${topicData.cid}:tids:unresolved`, tid));
         }
 
         const results = await Promise.all(promises);

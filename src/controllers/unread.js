@@ -61,7 +61,7 @@ unreadController.get = async function (req, res) {
     data.selectCategoryLabel = '[[unread:mark_as_read]]';
     data.selectCategoryIcon = 'fa-inbox';
     data.showCategorySelectLabel = true;
-    data.filters = helpers.buildFilters(baseUrl, filter, req.query);
+    data.filters = helpers.buildFilters(baseUrl, filter, req.query, true);
     data.selectedFilter = data.filters.find(filter => filter && filter.selected);
 
     res.render('unread', data);

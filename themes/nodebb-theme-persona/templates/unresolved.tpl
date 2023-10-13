@@ -17,10 +17,6 @@
         <!-- IMPORT partials/category/tools.tpl -->
         </div>
 
-        <div class="markread btn-group pull-right {{{ if !topics.length }}}hidden{{{ end }}}">
-        <!-- IMPORT partials/category-selector-right.tpl -->
-        </div>
-
         <!-- IMPORT partials/category-filter-right.tpl -->
 
         <div class="btn-group pull-right bottom-sheet">

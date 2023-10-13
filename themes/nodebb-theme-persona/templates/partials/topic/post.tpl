@@ -79,21 +79,6 @@
     <small class="pull-right">
         <!-- IMPORT partials/topic/reactions.tpl -->
         <span class="post-tools">
-
-            <!-- IF !reputation:disabled -->
-            <span class="resolved">
-                <a component="post/set_resolved" href="#" class="no-select">
-                    {{{ if post.unresolved }}}
-                        <i class="fa fa-dot-circle"></i>
-                    {{{ end }}}
-                    {{{ if !post.unresolved }}}
-                        <i class="fa fa-circle"></i>
-                    {{{ end }}}
-                    Resolved
-                </a>
-            </span>
-            <!-- ENDIF !reputation:disabled -->
-
             <a component="post/reply" href="#" class="no-select <!-- IF !privileges.topics:reply -->hidden<!-- ENDIF !privileges.topics:reply -->">[[topic:reply]]</a>
             <a component="post/quote" href="#" class="no-select <!-- IF !privileges.topics:reply -->hidden<!-- ENDIF !privileges.topics:reply -->">[[topic:quote]]</a>
         </span>

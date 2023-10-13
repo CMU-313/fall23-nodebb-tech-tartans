@@ -70,8 +70,6 @@ module.exports = function (Topics) {
         }
         deletedTopic.tags = tags;
         await deleteFromFollowersIgnorers(tid);
-        // checks if the topic is in 'topics:resolved'
-        const removeResolved = await db.isSortedSetMember('topics:resolved', tid);
         await Promise.all([
             db.deleteAll([
                 `tid:${tid}:followers`,
@@ -94,9 +92,26 @@ module.exports = function (Topics) {
             Topics.events.purge(tid),
             Topics.thumbs.deleteAll(tid),
             reduceCounters(tid),
-            // conditional removal of 'topics:resolved' or 'topics:unresolved'
-            removeResolved ? db.sortedSetRemove('topics:resolved', tid) : db.sortedSetRemove('topics:unresolved', tid),
         ]);
+
+        const cid = await Topics.getTopicField(tid, 'cid');
+        // conditional removal tid from sorted sets.
+        if (await db.isSortedSetMember('topics:resolved', tid)) {
+            await db.sortedSetRemove('topics:resolved', tid);
+        }
+
+        if (await db.isSortedSetMember('topics:unresolved', tid)) {
+            await db.sortedSetRemove('topics:unresolved', tid);
+        }
+
+        if (await db.isSortedSetMember(`cid:${cid}:tids:resolved`, tid)) {
+            await db.sortedSetRemove(`cid:${cid}:tids:resolved`, tid);
+        }
+
+        if (await db.isSortedSetMember(`cid:${cid}:tids:unresolved`, tid)) {
+            await db.sortedSetRemove(`cid:${cid}:tids:unresolved`, tid);
+        }
+
         plugins.hooks.fire('action:topic.purge', { topic: deletedTopic, uid: uid });
         await db.delete(`topic:${tid}`);
     };
