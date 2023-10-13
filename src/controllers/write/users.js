@@ -251,7 +251,7 @@ Users.addfriends = (req, res) => {
     const { friends_data_pairs = [] } = req.body;
     console.log('Testing addfriends API Endpoint');
 
-    const uid = req.user.uid;
+    const { uid } = req.user;
 
     // Retrieve the user's current data
     db.getObject(`user:${uid}`, (error, user_data) => {

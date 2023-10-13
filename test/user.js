@@ -14,10 +14,11 @@ const db = require('./mocks/databasemock');
 const User = require('../src/user');
 const Topics = require('../src/topics');
 const Categories = require('../src/categories');
+
 const response_body = 'Friends added successfully';
-const Response_Body = 'Internal Server Error'
-const response_status_code = 200
-const Response_Status_Code = 500
+const Response_Body = 'Internal Server Error';
+const response_status_code = 200;
+const Response_Status_Code = 500;
 const Posts = require('../src/posts');
 const Password = require('../src/password');
 const groups = require('../src/groups');
@@ -79,11 +80,9 @@ describe('User', () => {
 
     // Adding Tests For Adding Friends Feature:
     describe('API Endpoint: POST /users/:userId/addfriends', () => {
-
         const COMMON_PW = '123456';
 
-        let adminUid;
-        adminUid = User.create({ username: 'admin_user', password: COMMON_PW });
+        const adminUid = User.create({ username: 'admin_user', password: COMMON_PW });
         let csrf_token;
         let jar;
 
@@ -114,14 +113,13 @@ describe('User', () => {
             request({
                 method: 'post',
                 url: `${nconf.get('url')}/api/v3/users/${adminUid}/addfriends`,
-                form: add_friends_data
+                form: add_friends_data,
 
             }, (err, res) => {
                 assert.ifError(err);
                 assert.strictEqual(response_status_code, 200);
                 assert.strictEqual(response_body, 'Friends added successfully');
                 done();
-
             });
         });
 
@@ -130,18 +128,15 @@ describe('User', () => {
             const add_friends_data = {
                 friends_data: [],
             };
-    
             request({
                 method: 'post',
                 url: `${nconf.get('url')}/api/v3/users/${adminUid}/addfriends`,
-                form: add_friends_data
-
+                form: add_friends_data,
             }, (err, res) => {
                 assert.ifError(err);
                 assert.strictEqual(response_status_code, 200);
                 assert.strictEqual(response_body, 'Friends added successfully');
                 done();
-
             });
         });
 
@@ -154,14 +149,13 @@ describe('User', () => {
             request({
                 method: 'post',
                 url: `${nconf.get('url')}/api/v3/users/${adminUid}/addfriends`,
-                form: add_friends_data
+                form: add_friends_data,
 
             }, (err, res) => {
                 assert.ifError(err);
                 assert.strictEqual(Response_Status_Code, 500);
                 assert.strictEqual(Response_Body, 'Internal Server Error');
                 done();
-
             });
         });
 
@@ -174,19 +168,16 @@ describe('User', () => {
             request({
                 method: 'post',
                 url: `${nconf.get('url')}/api/v3/users/${adminUid}/addfriends`,
-                form: add_friends_data
+                form: add_friends_data,
 
             }, (err, res) => {
                 assert.ifError(err);
                 assert.strictEqual(Response_Status_Code, 500);
                 assert.strictEqual(Response_Body, 'Internal Server Error');
                 done();
-
             });
         });
     });
-    
-
 
     describe('.create(), when created', () => {
         it('should be created properly', async () => {
