@@ -128,6 +128,19 @@ describe('Controllers', () => {
             });
         });
 
+        it('should load unresolved', (done) => {
+            meta.configs.set('homePageRoute', 'unresolved', (err) => {
+                assert.ifError(err);
+
+                request(nconf.get('url'), (err, res, body) => {
+                    assert.ifError(err);
+                    assert.equal(res.statusCode, 200);
+                    assert(body);
+                    done();
+                });
+            });
+        });
+
         it('should load recent', (done) => {
             meta.configs.set('homePageRoute', 'recent', (err) => {
                 assert.ifError(err);
@@ -2429,6 +2442,39 @@ describe('Controllers', () => {
                 assert.equal(res.statusCode, 200);
                 assert.equal(res.headers['x-redirect'], '/unread?page=1');
                 assert.equal(body, '/unread?page=1');
+                done();
+            });
+        });
+    });
+
+    describe('unresolved', () => {
+        let jar;
+        before(async () => {
+            ({ jar } = await helpers.loginUser('foo', 'barbar'));
+        });
+
+        it('should load unresolved page', (done) => {
+            request(`${nconf.get('url')}/api/unresolved`, { jar: jar }, (err, res) => {
+                assert.ifError(err);
+                assert.equal(res.statusCode, 200);
+                done();
+            });
+        });
+
+        it('should 404 if filter is invalid', (done) => {
+            request(`${nconf.get('url')}/api/unresolved/doesnotexist`, { jar: jar }, (err, res) => {
+                assert.ifError(err);
+                assert.equal(res.statusCode, 404);
+                done();
+            });
+        });
+
+        it('should redirect if page is out of bounds', (done) => {
+            request(`${nconf.get('url')}/api/unresolved?page=-1`, { jar: jar, json: true }, (err, res, body) => {
+                assert.ifError(err);
+                assert.equal(res.statusCode, 200);
+                assert.equal(res.headers['x-redirect'], '/unresolved?page=1');
+                assert.equal(body, '/unresolved?page=1');
                 done();
             });
         });

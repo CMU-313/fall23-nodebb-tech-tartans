@@ -61,7 +61,7 @@ unresolvedController.get = async function (req, res) {
     data.selectCategoryLabel = 'Mark as Resolve';
     data.selectCategoryIcon = 'fa-inbox';
     data.showCategorySelectLabel = true;
-    data.filters = helpers.buildFilters(baseUrl, filter, req.query);
+    data.filters = helpers.buildFilters(baseUrl, filter, req.query, false);
     data.selectedFilter = data.filters.find(filter => filter && filter.selected);
 
     res.render('unresolved', data);

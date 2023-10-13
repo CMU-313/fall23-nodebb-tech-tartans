@@ -38,8 +38,8 @@ delete:
       description: a valid topic id
       example: 1
   responses:
-    '200':
-      description: Topic successfully unresolved
+    '400':
+      description: Topic already resolved
       content:
         application/json:
           schema:

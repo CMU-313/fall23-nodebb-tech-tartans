@@ -69,7 +69,40 @@ helpers.addLinkTags = function (params) {
     });
 };
 
-helpers.buildFilters = function (url, filter, query) {
+helpers.buildFilters = function (url, filter, query, notUnresolved) {
+    if (notUnresolved) {
+        return [{
+            name: '[[unread:all-topics]]',
+            url: url + helpers.buildQueryString(query, 'filter', ''),
+            selected: filter === '',
+            filter: '',
+            icon: 'fa-book',
+        }, {
+            name: '[[unread:new-topics]]',
+            url: url + helpers.buildQueryString(query, 'filter', 'new'),
+            selected: filter === 'new',
+            filter: 'new',
+            icon: 'fa-clock-o',
+        }, {
+            name: '[[unread:watched-topics]]',
+            url: url + helpers.buildQueryString(query, 'filter', 'watched'),
+            selected: filter === 'watched',
+            filter: 'watched',
+            icon: 'fa-bell-o',
+        }, {
+            name: '[[unread:unreplied-topics]]',
+            url: url + helpers.buildQueryString(query, 'filter', 'unreplied'),
+            selected: filter === 'unreplied',
+            filter: 'unreplied',
+            icon: 'fa-reply',
+        }, {
+            name: 'Unresolved Topics',
+            url: url + helpers.buildQueryString(query, 'filter', 'unresolved'),
+            selected: filter === 'unresolved',
+            filter: 'unresolved',
+            icon: 'fa-question',
+        }];
+    }
     return [{
         name: '[[unread:all-topics]]',
         url: url + helpers.buildQueryString(query, 'filter', ''),
@@ -95,10 +128,10 @@ helpers.buildFilters = function (url, filter, query) {
         filter: 'unreplied',
         icon: 'fa-reply',
     }, {
-        name: 'Unresolved Topics',
-        url: url + helpers.buildQueryString(query, 'filter', 'unreplied'),
-        selected: filter === 'unreplied',
-        filter: 'unreplied',
+        name: 'Unread Topics',
+        url: url + helpers.buildQueryString(query, 'filter', 'unread'),
+        selected: filter === 'unread',
+        filter: 'unread',
         icon: 'fa-question',
     }];
 };
