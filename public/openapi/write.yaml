@@ -88,6 +88,8 @@ paths:
     $ref: 'write/users/uid/emails/email/confirm.yaml'
   /users/{uid}/exports/{type}:
     $ref: 'write/users/uid/exports/type.yaml'
+  /users/{uid}/addfriends:
+    $ref: 'write/users/uid/addfriends.yaml'
   /groups/:
     $ref: 'write/groups.yaml'
   /groups/{slug}:

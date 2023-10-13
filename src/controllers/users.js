@@ -23,6 +23,7 @@ usersController.index = async function (req, res, next) {
         flagged: usersController.getFlaggedUsers,
 
         // Adding New Friends Tab (implemented as online for right now)
+        // friends: usersController.getOnlineUsers,
         friends: usersController.getOnlineUsers,
     };
 
@@ -206,6 +207,12 @@ async function render(req, res, data) {
     } else if (req.loggedIn) {
         const canInvite = await privileges.users.hasInvitePrivilege(req.uid);
         data.showInviteButton = canInvite && (!data.maximumInvites || data.invites < data.maximumInvites);
+    }
+
+    // Adding new data attribute: showAddFriendsButton
+    data.showAddFriendsButton = false;
+    if (req.loggedIn) {
+        data.showAddFriendsButton = true;
     }
 
     data['reputation:disabled'] = meta.config['reputation:disabled'];

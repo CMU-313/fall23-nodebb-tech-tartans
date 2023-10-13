@@ -10,6 +10,7 @@ define('accounts/invite', ['api', 'benchpress', 'bootbox', 'alerts'], function (
     Invite.handle = function () {
         $('[component="user/invite"]').on('click', function (e) {
             e.preventDefault();
+            console.log('This is a message to the console saying the invite button has been clicked');
             api.get(`/api/v3/users/${app.user.uid}/invites/groups`, {}).then((groups) => {
                 Benchpress.parse('modals/invite', { groups: groups }, function (html) {
                     bootbox.dialog({
@@ -57,4 +58,57 @@ define('accounts/invite', ['api', 'benchpress', 'bootbox', 'alerts'], function (
     };
 
     return Invite;
+});
+
+define('accounts/addfriends', ['api', 'benchpress', 'bootbox', 'alerts'], function (api, Benchpress, bootbox, alerts) {
+    const AddFriends = {};
+    const friends_data = [];
+
+    AddFriends.handle = function () {
+        $('[component="user/addfriends"]').on('click', function (e) {
+            e.preventDefault();
+            console.log('This is a message that confirms that the add friends button was clicked');
+            api.get(`/api/users/`, {}).then((users_response) => {
+                for (let i = 0; i < users_response.users.length; i++) {
+                    friends_data.push([users_response.users[i].uid, users_response.users[i].username]);
+                }
+                Benchpress.parse('modals/addfriends', { friends_data: friends_data }, function (html) {
+                    bootbox.dialog({
+                        message: html,
+                        title: `Add Friends`,
+                        onEscape: true,
+                        buttons: {
+                            cancel: {
+                                label: `Cancel`,
+                                className: 'btn-default',
+                            },
+                            invite: {
+                                label: `Add Friend`,
+                                className: 'btn-primary',
+                                callback: AddFriends.send,
+                            },
+                        },
+                    });
+                });
+            }).catch(alerts.error);
+            friends_data.splice(0, friends_data.length);
+        });
+    };
+
+    AddFriends.send = function () {
+        const $friends_data = $('#added-friends-data');
+
+        console.log('Here are the (user_id, username) pairs of friends added');
+        console.log($friends_data.val());
+
+        const data = {
+            friends_data: $friends_data.val(),
+        };
+
+        api.post(`/users/${app.user.uid}/addfriends`, data).then(() => {
+            alerts.success(`Friends have been added`);
+        }).catch(alerts.error);
+    };
+
+    return AddFriends;
 });

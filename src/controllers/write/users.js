@@ -197,6 +197,7 @@ Users.revokeSession = async (req, res) => {
 };
 
 Users.invite = async (req, res) => {
+    console.log('testing invites api');
     const { emails, groupsToJoin = [] } = req.body;
 
     if (!emails || !Array.isArray(groupsToJoin)) {
@@ -242,6 +243,47 @@ Users.invite = async (req, res) => {
     }
 
     return helpers.formatApiResponse(200, res);
+};
+
+// Adding My Own Controller to Add Friends
+
+Users.addfriends = (req, res) => {
+    const { friends_data_pairs = [] } = req.body;
+    console.log('Testing addfriends API Endpoint');
+
+    const { uid } = req.user;
+
+    // Retrieve the user's current data
+    db.getObject(`user:${uid}`, (error, user_data) => {
+        if (error) {
+            console.error('Error:', error);
+            return helpers.formatApiResponse(500, res, 'Internal Server Error');
+        }
+
+        if (!user_data) {
+            user_data = {
+                friends: new Set(), // Initialize the friends property as a Set
+            };
+        }
+
+        for (let i = 0; i < friends_data_pairs.length; i++) {
+            if (typeof friends_data_pairs[i][0] !== 'number' || friends_data_pairs[i].length !== 2) {
+                console.error('Error:', error);
+                return helpers.formatApiResponse(500, res, 'Internal Server Error');
+            }
+            user_data.friends.add(friends_data_pairs[i][0]);
+        }
+
+        // Update the user's data in the database
+        db.setObject(`user:${uid}`, user_data, (error) => {
+            if (error) {
+                console.error('Error:', error);
+                return helpers.formatApiResponse(500, res, 'Internal Server Error');
+            }
+            return helpers.formatApiResponse(200, res, 'Friends added successfully');
+            // return helpers.formatApiResponse(200, res, 'Friends blah blah blah');
+        });
+    });
 };
 
 Users.getInviteGroups = async function (req, res) {

@@ -46,6 +46,12 @@ module.exports = function (User) {
     async function create(data) {
         const timestamp = data.timestamp || Date.now();
 
+        // Modifying user data to include friends attribute
+        const friends_set = new Set();
+
+        // Adding an object that stores friends
+        // await db.setObject(`user:${uid}`, friends_set);
+
         let userData = {
             username: data.username,
             userslug: data.userslug,
@@ -54,6 +60,7 @@ module.exports = function (User) {
             joindate: timestamp,
             lastonline: timestamp,
             status: 'online',
+            friends: friends_set,
         };
         ['picture', 'fullname', 'location', 'birthday'].forEach((field) => {
             if (data[field]) {
@@ -83,6 +90,8 @@ module.exports = function (User) {
 
         await db.setObject(`user:${uid}`, userData);
 
+        // Adding friends set as attribute for bulk add
+
         const bulkAdd = [
             ['username:uid', userData.uid, userData.username],
             [`user:${userData.uid}:usernames`, timestamp, `${userData.username}:${timestamp}`],
@@ -92,6 +101,7 @@ module.exports = function (User) {
             ['users:online', timestamp, userData.uid],
             ['users:postcount', 0, userData.uid],
             ['users:reputation', 0, userData.uid],
+            ['friends:uid', userData.uid, userData.friends],
         ];
 
         if (userData.fullname) {
