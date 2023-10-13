@@ -1,14 +1,4 @@
 'use strict';
-// const db = require('./../../../src/database');
-// // const user = require('../../../../src/user');
-
-// // const path = require('path');
-
-// // // Define the path to the module you want to require
-// // const dbPath = path.join(__dirname, '../src/database');
-
-// // // Now, require the module using the calculated absolute path
-// // const db = require(dbPath);
 
 define('accounts/invite', ['api', 'benchpress', 'bootbox', 'alerts'], function (api, Benchpress, bootbox, alerts) {
     const Invite = {};
@@ -79,26 +69,9 @@ define('accounts/addfriends', ['api', 'benchpress', 'bootbox', 'alerts'], functi
             e.preventDefault();
             console.log('This is a message that confirms that the add friends button was clicked');
             api.get(`/api/users/`, {}).then((users_response) => {
-                // console.log('Here is the users_response');
-                // console.log(users_response);
-
-                for (let i = 0; i < users_response['users'].length; i++) {
-                    // console.log("Here is each username")
-                    // console.log(users_response['users'][i]['username'])
-                    // usernames.push(users_response['users'][i]['username']);
-                    friends_data.push([users_response['users'][i]['uid'], users_response['users'][i]['username']]);
+                for (let i = 0; i < users_response.users.length; i++) {
+                    friends_data.push([users_response.users[i].uid, users_response.users[i].username]);
                 }
-
-                
-
-                // const db_output = db.getSetMembers('username:uid');
-                // console.log("Here is the db output: ");
-                // console.log(db_output);
-
-
-                // console.log("Here are all usernames")
-                // console.log(usernames)
-
                 Benchpress.parse('modals/addfriends', { friends_data: friends_data }, function (html) {
                     bootbox.dialog({
                         message: html,
@@ -117,17 +90,15 @@ define('accounts/addfriends', ['api', 'benchpress', 'bootbox', 'alerts'], functi
                         },
                     });
                 });
-                
             }).catch(alerts.error);
-            friends_data.splice(0,friends_data.length);
-            
+            friends_data.splice(0, friends_data.length);
         });
     };
 
     AddFriends.send = function () {
         const $friends_data = $('#added-friends-data');
 
-        console.log("Here are the (user_id, username) pairs of friends added");
+        console.log('Here are the (user_id, username) pairs of friends added');
         console.log($friends_data.val());
 
         const data = {
@@ -137,7 +108,6 @@ define('accounts/addfriends', ['api', 'benchpress', 'bootbox', 'alerts'], functi
         api.post(`/users/${app.user.uid}/addfriends`, data).then(() => {
             alerts.success(`Friends have been added`);
         }).catch(alerts.error);
-
     };
 
     return AddFriends;

@@ -197,9 +197,7 @@ Users.revokeSession = async (req, res) => {
 };
 
 Users.invite = async (req, res) => {
-
-    console.log("testing invites api");
-
+    console.log('testing invites api');
     const { emails, groupsToJoin = [] } = req.body;
 
     if (!emails || !Array.isArray(groupsToJoin)) {
@@ -251,7 +249,7 @@ Users.invite = async (req, res) => {
 
 Users.addfriends = (req, res) => {
     const { friends_data_pairs = [] } = req.body;
-    console.log("Testing addfriends API Endpoint");
+    console.log('Testing addfriends API Endpoint');
 
     const uid = req.user.uid;
 
@@ -269,13 +267,11 @@ Users.addfriends = (req, res) => {
         }
 
         for (let i = 0; i < friends_data_pairs.length; i++) {
-            if (typeof friends_data_pairs[i][0] != 'number' || friends_data_pairs[i].length != 2) {
+            if (typeof friends_data_pairs[i][0] !== 'number' || friends_data_pairs[i].length !== 2) {
                 console.error('Error:', error);
                 return helpers.formatApiResponse(500, res, 'Internal Server Error');
             }
-            else {
-                user_data.friends.add(friends_data_pairs[i][0]);
-            }
+            user_data.friends.add(friends_data_pairs[i][0]);
         }
 
         // Update the user's data in the database
@@ -289,40 +285,6 @@ Users.addfriends = (req, res) => {
         });
     });
 };
-
-
-
-// Users.addfriends = async (req, res) => {
-//     const { friends_data_pairs = [] } = req.body;
-//     console.log("Api for add friends is working and firing!");
-
-
-//     const user_data = {}
-//     await db.getObjectField(`user:${req.user.uid}`, (error, user_data) => {
-//         if (error) {
-//         console.error('Error:', error);
-//         return;
-//         }
-        
-//         if (user_data) {
-//             for (let i = 0; i < friends_data_pairs.length; i++) {
-//                 // await db.sortedSetAdd('friends:uid', req.user.uid, friends_data_pairs[i][0]);
-//                 user_data.friends.add(friends_data_pairs[i][0])
-//             }
-            
-//         } 
-        
-//     });
-//     await db.setObject(`user:${uid}`, user_data);
-
-//     // for (let i = 0; i < friends_data_pairs.length; i++) {
-//     //     // await db.sortedSetAdd('friends:uid', req.user.uid, friends_data_pairs[i][0]);
-
-        
-//     // }
-
-//     return helpers.formatApiResponse(200, res);
-// };
 
 Users.getInviteGroups = async function (req, res) {
     if (parseInt(req.params.uid, 10) !== parseInt(req.user.uid, 10)) {

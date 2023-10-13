@@ -101,7 +101,7 @@ module.exports = function (User) {
             ['users:online', timestamp, userData.uid],
             ['users:postcount', 0, userData.uid],
             ['users:reputation', 0, userData.uid],
-            ['friends:uid', userData.uid, userData.friends]
+            ['friends:uid', userData.uid, userData.friends],
         ];
 
         if (userData.fullname) {
