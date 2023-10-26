@@ -1,0 +1,1 @@
+__history = [{"date":"Thu, 26 Oct 2023 01:43:33 GMT","sloc":50,"lloc":13,"functions":3,"deliveredBugs":0.487,"difficulty":26.154,"maintainability":69.687,"lintErrors":18}]
