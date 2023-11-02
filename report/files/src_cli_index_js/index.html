@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - src/cli/index.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/cli/index.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">79.56</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">322</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">28.06</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">3.28</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/* eslint-disable import/order */
+
+&#039;use strict&#039;;
+
+const fs = require(&#039;fs&#039;);
+const path = require(&#039;path&#039;);
+
+require(&#039;../../require-main&#039;);
+
+const packageInstall = require(&#039;./package-install&#039;);
+const { paths } = require(&#039;../constants&#039;);
+
+try {
+    fs.accessSync(paths.currentPackage, fs.constants.R_OK); // throw on missing package.json
+    try { // handle missing node_modules/ directory
+        fs.accessSync(paths.nodeModules, fs.constants.R_OK);
+    } catch (e) {
+        if (e.code === &#039;ENOENT&#039;) {
+            // run package installation just to sync up node_modules/ with existing package.json
+            packageInstall.installAll();
+        } else {
+            throw e;
+        }
+    }
+    fs.accessSync(path.join(paths.nodeModules, &#039;semver/package.json&#039;), fs.constants.R_OK);
+
+    const semver = require(&#039;semver&#039;);
+    const defaultPackage = require(&#039;../../install/package.json&#039;);
+
+    const checkVersion = function (packageName) {
+        const { version } = JSON.parse(fs.readFileSync(path.join(paths.nodeModules, packageName, &#039;package.json&#039;), &#039;utf8&#039;));
+        if (!semver.satisfies(version, defaultPackage.dependencies[packageName])) {
+            const e = new TypeError(`Incorrect dependency version: ${packageName}`);
+            e.code = &#039;DEP_WRONG_VERSION&#039;;
+            throw e;
+        }
+    };
+
+    checkVersion(&#039;nconf&#039;);
+    checkVersion(&#039;async&#039;);
+    checkVersion(&#039;commander&#039;);
+    checkVersion(&#039;chalk&#039;);
+    checkVersion(&#039;lodash&#039;);
+    checkVersion(&#039;lru-cache&#039;);
+} catch (e) {
+    if ([&#039;ENOENT&#039;, &#039;DEP_WRONG_VERSION&#039;, &#039;MODULE_NOT_FOUND&#039;].includes(e.code)) {
+        console.warn(&#039;Dependencies outdated or not yet installed.&#039;);
+        console.log(&#039;Installing them now...\n&#039;);
+
+        packageInstall.updatePackageFile();
+        packageInstall.preserveExtraneousPlugins();
+        packageInstall.installAll();
+
+        const chalk = require(&#039;chalk&#039;);
+        console.log(`${chalk.green(&#039;OK&#039;)}\n`);
+    } else {
+        throw e;
+    }
+}
+
+const chalk = require(&#039;chalk&#039;);
+const nconf = require(&#039;nconf&#039;);
+const { program } = require(&#039;commander&#039;);
+const yargs = require(&#039;yargs&#039;);
+
+const pkg = require(&#039;../../install/package.json&#039;);
+const file = require(&#039;../file&#039;);
+const prestart = require(&#039;../prestart&#039;);
+
+program.configureHelp(require(&#039;./colors&#039;));
+
+program
+    .name(&#039;./nodebb&#039;)
+    .description(&#039;Welcome to NodeBB&#039;)
+    .version(pkg.version)
+    .option(&#039;--json-logging&#039;, &#039;Output to logs in JSON format&#039;, false)
+    .option(&#039;--log-level &lt;level&gt;&#039;, &#039;Default logging level to use&#039;, &#039;info&#039;)
+    .option(&#039;--config &lt;value&gt;&#039;, &#039;Specify a config file&#039;, &#039;config.json&#039;)
+    .option(&#039;-d, --dev&#039;, &#039;Development mode, including verbose logging&#039;, false)
+    .option(&#039;-l, --log&#039;, &#039;Log subprocess output to console&#039;, false);
+
+// provide a yargs object ourselves
+// otherwise yargs will consume `--help` or `help`
+// and `nconf` will exit with useless usage info
+const opts = yargs(process.argv.slice(2)).help(false).exitProcess(false);
+nconf.argv(opts).env({
+    separator: &#039;__&#039;,
+});
+
+prestart.setupWinston();
+
+// Alternate configuration file support
+const configFile = path.resolve(paths.baseDir, nconf.get(&#039;config&#039;) || &#039;config.json&#039;);
+const configExists = file.existsSync(configFile) || (nconf.get(&#039;url&#039;) &amp;&amp; nconf.get(&#039;secret&#039;) &amp;&amp; nconf.get(&#039;database&#039;));
+
+prestart.loadConfig(configFile);
+prestart.versionCheck();
+
+if (!configExists &amp;&amp; process.argv[2] !== &#039;setup&#039;) {
+    require(&#039;./setup&#039;).webInstall();
+    process.exit(0);
+}
+
+process.env.CONFIG = configFile;
+
+// running commands
+program
+    .command(&#039;start&#039;)
+    .description(&#039;Start the NodeBB server&#039;)
+    .action(() =&gt; {
+        require(&#039;./running&#039;).start(program.opts());
+    });
+program
+    .command(&#039;slog&#039;, null, {
+        noHelp: true,
+    })
+    .description(&#039;Start the NodeBB server and view the live output log&#039;)
+    .action(() =&gt; {
+        require(&#039;./running&#039;).start({ ...program.opts(), log: true });
+    });
+program
+    .command(&#039;dev&#039;, null, {
+        noHelp: true,
+    })
+    .description(&#039;Start NodeBB in verbose development mode&#039;)
+    .action(() =&gt; {
+        process.env.NODE_ENV = &#039;development&#039;;
+        global.env = &#039;development&#039;;
+        require(&#039;./running&#039;).start({ ...program.opts(), dev: true });
+    });
+program
+    .command(&#039;stop&#039;)
+    .description(&#039;Stop the NodeBB server&#039;)
+    .action(() =&gt; {
+        require(&#039;./running&#039;).stop(program.opts());
+    });
+program
+    .command(&#039;restart&#039;)
+    .description(&#039;Restart the NodeBB server&#039;)
+    .action(() =&gt; {
+        require(&#039;./running&#039;).restart(program.opts());
+    });
+program
+    .command(&#039;status&#039;)
+    .description(&#039;Check the running status of the NodeBB server&#039;)
+    .action(() =&gt; {
+        require(&#039;./running&#039;).status(program.opts());
+    });
+program
+    .command(&#039;log&#039;)
+    .description(&#039;Open the output log (useful for debugging)&#039;)
+    .action(() =&gt; {
+        require(&#039;./running&#039;).log(program.opts());
+    });
+
+// management commands
+program
+    .command(&#039;setup [config]&#039;)
+    .description(&#039;Run the NodeBB setup script, or setup with an initial config&#039;)
+    .option(&#039;--skip-build&#039;, &#039;Run setup without building assets&#039;)
+    .action((initConfig) =&gt; {
+        if (initConfig) {
+            try {
+                initConfig = JSON.parse(initConfig);
+            } catch (e) {
+                console.warn(chalk.red(&#039;Invalid JSON passed as initial config value.&#039;));
+                console.log(&#039;If you meant to pass in an initial config value, please try again.\n&#039;);
+
+                throw e;
+            }
+        }
+        require(&#039;./setup&#039;).setup(initConfig);
+    });
+
+program
+    .command(&#039;install [plugin]&#039;)
+    .description(&#039;Launch the NodeBB web installer for configuration setup or install a plugin&#039;)
+    .option(&#039;-f, --force&#039;, &#039;Force plugin installation even if it may be incompatible with currently installed NodeBB version&#039;)
+    .action((plugin, options) =&gt; {
+        if (plugin) {
+            require(&#039;./manage&#039;).install(plugin, options);
+        } else {
+            require(&#039;./setup&#039;).webInstall();
+        }
+    });
+
+program
+    .command(&#039;build [targets...]&#039;)
+    .description(`Compile static assets ${chalk.red(&#039;(JS, CSS, templates, languages)&#039;)}`)
+    .option(&#039;-s, --series&#039;, &#039;Run builds in series without extra processes&#039;)
+    .option(&#039;-w, --webpack&#039;, &#039;Bundle assets with webpack&#039;, true)
+    .action((targets, options) =&gt; {
+        if (program.opts().dev) {
+            process.env.NODE_ENV = &#039;development&#039;;
+            global.env = &#039;development&#039;;
+        }
+        require(&#039;./manage&#039;).build(targets.length ? targets : true, options);
+    })
+    .on(&#039;--help&#039;, () =&gt; {
+        require(&#039;../meta/aliases&#039;).buildTargets();
+    });
+program
+    .command(&#039;activate [plugin]&#039;)
+    .description(&#039;Activate a plugin for the next startup of NodeBB (nodebb-plugin- prefix is optional)&#039;)
+    .action((plugin) =&gt; {
+        require(&#039;./manage&#039;).activate(plugin);
+    });
+program
+    .command(&#039;plugins&#039;)
+    .action(() =&gt; {
+        require(&#039;./manage&#039;).listPlugins();
+    })
+    .description(&#039;List all installed plugins&#039;);
+program
+    .command(&#039;events [count]&#039;)
+    .description(&#039;Outputs the most recent administrative events recorded by NodeBB&#039;)
+    .action((count) =&gt; {
+        require(&#039;./manage&#039;).listEvents(count);
+    });
+program
+    .command(&#039;info&#039;)
+    .description(&#039;Outputs various system info&#039;)
+    .action(() =&gt; {
+        require(&#039;./manage&#039;).info();
+    });
+
+// reset
+const resetCommand = program.command(&#039;reset&#039;);
+
+resetCommand
+    .description(&#039;Reset plugins, themes, settings, etc&#039;)
+    .option(&#039;-t, --theme [theme]&#039;, &#039;Reset to [theme] or to the default theme&#039;)
+    .option(&#039;-p, --plugin [plugin]&#039;, &#039;Disable [plugin] or all plugins&#039;)
+    .option(&#039;-w, --widgets&#039;, &#039;Disable all widgets&#039;)
+    .option(&#039;-s, --settings&#039;, &#039;Reset settings to their default values&#039;)
+    .option(&#039;-a, --all&#039;, &#039;All of the above&#039;)
+    .action((options) =&gt; {
+        const valid = [&#039;theme&#039;, &#039;plugin&#039;, &#039;widgets&#039;, &#039;settings&#039;, &#039;all&#039;].some(x =&gt; options[x]);
+        if (!valid) {
+            console.warn(`\n${chalk.red(&#039;No valid options passed in, so nothing was reset.&#039;)}`);
+            resetCommand.help();
+        }
+
+        require(&#039;./reset&#039;).reset(options, (err) =&gt; {
+            if (err) {
+                return process.exit(1);
+            }
+
+            process.exit(0);
+        });
+    });
+
+// user
+program
+    .addCommand(require(&#039;./user&#039;)());
+
+// upgrades
+program
+    .command(&#039;upgrade [scripts...]&#039;)
+    .description(&#039;Run NodeBB upgrade scripts and ensure packages are up-to-date, or run a particular upgrade script&#039;)
+    .option(&#039;-m, --package&#039;, &#039;Update package.json from defaults&#039;, false)
+    .option(&#039;-i, --install&#039;, &#039;Bringing base dependencies up to date&#039;, false)
+    .option(&#039;-p, --plugins&#039;, &#039;Check installed plugins for updates&#039;, false)
+    .option(&#039;-s, --schema&#039;, &#039;Update NodeBB data store schema&#039;, false)
+    .option(&#039;-b, --build&#039;, &#039;Rebuild assets&#039;, false)
+    .on(&#039;--help&#039;, () =&gt; {
+        console.log(`\n${[
+            &#039;When running particular upgrade scripts, options are ignored.&#039;,
+            &#039;By default all options are enabled. Passing any options disables that default.&#039;,
+            &#039;\nExamples:&#039;,
+            `  Only package and dependency updates: ${chalk.yellow(&#039;./nodebb upgrade -mi&#039;)}`,
+            `  Only database update: ${chalk.yellow(&#039;./nodebb upgrade -s&#039;)}`,
+        ].join(&#039;\n&#039;)}`);
+    })
+    .action((scripts, options) =&gt; {
+        if (program.opts().dev) {
+            process.env.NODE_ENV = &#039;development&#039;;
+            global.env = &#039;development&#039;;
+        }
+        require(&#039;./upgrade&#039;).upgrade(scripts.length ? scripts : true, options);
+    });
+
+program
+    .command(&#039;upgrade-plugins&#039;, null, {
+        noHelp: true,
+    })
+    .alias(&#039;upgradePlugins&#039;)
+    .description(&#039;Upgrade plugins&#039;)
+    .action(() =&gt; {
+        require(&#039;./upgrade-plugins&#039;).upgradePlugins((err) =&gt; {
+            if (err) {
+                throw err;
+            }
+            console.log(chalk.green(&#039;OK&#039;));
+            process.exit();
+        });
+    });
+
+program
+    .command(&#039;help [command]&#039;)
+    .description(&#039;Display help for [command]&#039;)
+    .action((name) =&gt; {
+        if (!name) {
+            return program.help();
+        }
+
+        const command = program.commands.find(command =&gt; command._name === name);
+        if (command) {
+            command.help();
+        } else {
+            console.log(`error: unknown command &#039;${command}&#039;.`);
+            program.help();
+        }
+    });
+
+if (process.argv.length === 2) {
+    program.help();
+}
+
+program.executables = false;
+
+program.parse();</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
